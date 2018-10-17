@@ -3,6 +3,7 @@ local coroutine = coroutine
 local xpcall = xpcall
 local traceback = debug.traceback
 local table = table
+local assert = assert
 
 function skynet.queue()
 	local current_thread

@@ -4,7 +4,6 @@ local assert = assert
 local sproto = {}
 local host = {}
 
-local weak_mt = { __mode = "kv" }
 local sproto_mt = { __index = sproto }
 local sproto_nogc = { __index = sproto }
 local host_mt = { __index = host }
@@ -17,8 +16,8 @@ function sproto.new(bin)
 	local cobj = assert(core.newproto(bin))
 	local self = {
 		__cobj = cobj,
-		__tcache = setmetatable( {} , weak_mt ),
-		__pcache = setmetatable( {} , weak_mt ),
+		__tcache = {},
+		__pcache = {},
 	}
 	return setmetatable(self, sproto_mt)
 end
@@ -26,8 +25,8 @@ end
 function sproto.sharenew(cobj)
 	local self = {
 		__cobj = cobj,
-		__tcache = setmetatable( {} , weak_mt ),
-		__pcache = setmetatable( {} , weak_mt ),
+		__tcache = {},
+		__pcache = {},
 	}
 	return setmetatable(self, sproto_nogc)
 end
@@ -107,6 +106,7 @@ local function queryproto(self, pname)
 
 	return v
 end
+sproto.queryproto = queryproto
 
 function sproto:exist_proto(pname)
 	local v = self.__pcache[pname]
