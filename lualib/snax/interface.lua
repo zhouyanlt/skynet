@@ -22,14 +22,18 @@ return function (name , G, loader)
 	local function func_id(id, group)
 		local tmp = {}
 		local function count( _, name, func)
+			local fname = debug.getinfo(3, 'n').name
+			if fname == "require" then
+				error(string.format("%s.%s not defined in main service file", group, name))
+			end
 			if type(name) ~= "string" then
-				error (string.format("%s method only support string", group))
+				error(string.format("%s method only support string", group))
 			end
 			if type(func) ~= "function" then
-				error (string.format("%s.%s must be function"), group, name)
+				error(string.format("%s.%s must be function"), group, name)
 			end
 			if tmp[name] then
-				error (string.format("%s.%s duplicate definition", group, name))
+				error(string.format("%s.%s duplicate definition", group, name))
 			end
 			tmp[name] = true
 			table.insert(id, { #id + 1, group, name, func} )
@@ -76,7 +80,7 @@ return function (name , G, loader)
 	local path = assert(skynet.getenv "snax" , "please set snax in config file")
 	local mainfunc, pattern = loader(path, name, G)
 
-	setmetatable(G,	{ __index = env , __newindex = init_system })
+	setmetatable(G, { __index = env, __newindex = init_system })
 	local ok, err = xpcall(mainfunc, debug.traceback)
 	setmetatable(G, nil)
 	assert(ok,err)
